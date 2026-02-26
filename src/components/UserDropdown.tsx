@@ -47,16 +47,16 @@ export default function UserDropdown({ user, logout }: UserDropdownProps) {
             {/* TRIGGER BUTTON */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-3 px-4 py-2 rounded-full bg-[#1a1a1a] hover:bg-[#252525] transition border border-[#2a2a2a] hover:border-[#d4af7f]"
+                className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-white border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all text-slate-700 font-medium"
             >
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-8 w-8 border border-slate-100">
                     <AvatarImage src={photoURL || ""} alt={displayName} />
-                    <AvatarFallback className="text-sm bg-[#0a0a0a] text-[#d4af7f]">
+                    <AvatarFallback className="text-sm bg-purple-100 text-purple-600 font-bold">
                         {getInitials(displayName)}
                     </AvatarFallback>
                 </Avatar>
 
-                <span className="text-sm font-medium hidden md:block">{displayName}</span>
+                <span className="text-sm font-semibold hidden md:block text-slate-700">{displayName}</span>
 
                 <ChevronDown
                     className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
@@ -72,43 +72,43 @@ export default function UserDropdown({ user, logout }: UserDropdownProps) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0a0a0a] border border-[#2a2a2a] shadow-2xl overflow-hidden z-50"
+                        className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-200 shadow-xl overflow-hidden z-50 text-slate-800"
                     >
                         {/* USER INFO */}
-                        <div className="p-4 border-b border-[#1f1f1f] bg-gradient-to-b from-[#111] to-[#0a0a0a]">
+                        <div className="p-4 border-b border-slate-100 bg-slate-50">
                             <div className="flex items-center gap-3 mb-2">
-                                <Avatar className="h-12 w-12 border-2 border-[#2a2a2a]">
+                                <Avatar className="h-12 w-12 border border-slate-200">
                                     <AvatarImage src={photoURL || ""} alt={displayName} />
-                                    <AvatarFallback className="text-lg bg-[#1a1a1a] text-[#d4af7f]">
+                                    <AvatarFallback className="text-lg bg-purple-100 text-purple-600 font-bold">
                                         {getInitials(displayName)}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-white truncate">{displayName}</p>
-                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                    <p className="font-semibold text-slate-900 truncate">{displayName}</p>
+                                    <p className="text-xs text-slate-500 truncate">{user.email}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* SECTIONS */}
-                        <div className="p-2 space-y-1 bg-[#0a0a0a]">
+                        <div className="p-2 space-y-1 bg-white">
 
                             <Link
                                 href="/profile"
-                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-all group"
+                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-slate-600 hover:text-purple-600 hover:bg-purple-50 transition-all group font-medium"
                             >
-                                <UserIcon className="w-4 h-4 text-gray-500 group-hover:text-[#d4af7f] transition-colors" />
+                                <UserIcon className="w-4 h-4 text-slate-400 group-hover:text-purple-500 transition-colors" />
                                 <span>My Profile</span>
                             </Link>
 
-                            <div className="my-1 h-px bg-[#1f1f1f] mx-2" />
+                            <div className="my-1 h-px bg-slate-100 mx-2" />
 
                             <button
                                 onClick={async () => {
                                     await logout();
                                     setIsOpen(false);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-all group"
+                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-red-500 hover:text-red-600 hover:bg-red-50 transition-all group font-medium"
                             >
                                 <LogOut className="w-4 h-4" />
                                 <span>Sign Out</span>
