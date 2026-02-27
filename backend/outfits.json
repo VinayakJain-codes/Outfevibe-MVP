@@ -279,7 +279,7 @@
 "mood": ["chill"],
 "budget": ["low"],
 "persona": ["playful_creative", "minimalist_maven", "comfort_queen"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/college_01.jpeg",
 "affiliateLink": "https://amzn.to/4aBPTfp"
 },
@@ -327,7 +327,7 @@
 "mood": ["bold"],
 "budget": ["low"],
 "persona": ["playful_creative", "minimalist_maven", "comfort_queen"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/college_05.jpeg",
 "affiliateLink": "https://amzn.to/4sbXU0j"
 },
@@ -483,7 +483,7 @@
 "mood": ["bold"],
 "budget": ["medium"],
 "persona": ["streetwear_icon"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/party_10.jpeg",
 "affiliateLink": "https://amzn.to/4s5e0Jc"
 },
@@ -495,7 +495,7 @@
 "mood": ["chill"],
 "budget": ["high"],
 "persona": ["streetwear_icon"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/party_11.jpeg",
 "affiliateLink": "https://amzn.to/4aXo8gj"
 },
@@ -519,7 +519,7 @@
 "mood": ["classic"],
 "budget": ["high"],
 "persona": ["streetwear_icon", "casual_cool"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/party_13.jpeg",
 "affiliateLink": "https://myntr.it/2guT947"
 },
@@ -567,7 +567,7 @@
 "mood": ["chill"],
 "budget": ["medium"],
 "persona": ["minimalist_king", "modern_gentlemen"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/date_02.jpeg",
 "affiliateLink": "https://amzn.to/4kW9SsJ"
 },
@@ -627,7 +627,7 @@
 "mood": ["bold"],
 "budget": ["low"],
 "persona": ["romantic_softie"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/date_07.jpeg",
 "affiliateLink": "https://amzn.to/4cgiTum"
 },
@@ -639,7 +639,7 @@
 "mood": ["chill"],
 "budget": ["medium"],
 "persona": ["romantic_softie"],
-"categories": ["persona_trending", "ai_style", "quiz_outfit"],
+"categories": ["persona_trending", "ai_style", "quiz_outfit", "general_trending"],
 "image": "/outfits/date_08.jpeg",
 "affiliateLink": "https://amzn.to/4l2l0EC"
 },
