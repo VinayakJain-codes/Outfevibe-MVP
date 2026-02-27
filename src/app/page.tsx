@@ -7,6 +7,18 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { useAuth } from "@/context/authContext";
 import UserDropdown from "@/components/UserDropdown";
+
+type FestiveOutfit = {
+  id: number;
+  title: string;
+  gender: "male" | "female";
+  occasion: string[];
+  mood: string[];
+  budget: string[];
+  categories: string[];
+  image: string;
+  affiliateLink: string;
+};
 import FallingColors from "@/components/FallingColors";
 import { motion } from "framer-motion";
 import { Sparkles, Upload, ArrowRight, Zap, Target, BarChart3, Menu, X } from "lucide-react";
@@ -18,9 +30,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [selectedGender, setSelectedGender] = useState<"male" | "female">("female");
-  const [trendingTab, setTrendingTab] = useState<"general" | "persona">("general");
+  const [trendingTab, setTrendingTab] = useState<"general" | "persona" | "festive">("general");
   const [userPersona, setUserPersona] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [festiveOutfits, setFestiveOutfits] = useState<FestiveOutfit[]>([]);
+  const [festiveGender, setFestiveGender] = useState<"male" | "female">("female");
 
   const router = useRouter();
 
@@ -53,6 +67,23 @@ export default function Home() {
     };
     loadPersona();
   }, [user]);
+
+  // Load festive outfits from API
+  useEffect(() => {
+    async function loadFestive() {
+      try {
+        const res = await fetch("/api/outfits");
+        const data: FestiveOutfit[] = await res.json();
+        const holi = data.filter((item) =>
+          item.categories?.includes("holi_trending")
+        );
+        setFestiveOutfits(holi);
+      } catch (err) {
+        console.error("Failed to load festive outfits:", err);
+      }
+    }
+    loadFestive();
+  }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -310,7 +341,7 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Tab Switcher: General / For You */}
+          {/* Tab Switcher: General / Festive / For You */}
           <div className="flex justify-center mb-10">
             <div className="inline-flex bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full p-1 shadow-sm">
               <button
@@ -321,6 +352,15 @@ export default function Home() {
                   }`}
               >
                 🔥 General
+              </button>
+              <button
+                onClick={() => setTrendingTab("festive")}
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${trendingTab === "festive"
+                  ? "bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-lg"
+                  : "text-slate-500 hover:text-slate-800"
+                  }`}
+              >
+                🎉 Festive
               </button>
               <button
                 onClick={() => setTrendingTab("persona")}
@@ -486,6 +526,102 @@ export default function Home() {
                   </motion.div>
                 </div>
               )}
+            </>
+          )}
+
+          {/* FESTIVE TAB */}
+          {trendingTab === "festive" && (
+            <>
+              {/* Festive badge */}
+              <div className="text-center mb-6">
+                <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-orange-50 border border-orange-200/50 text-sm">
+                  <span className="text-orange-500">🎨</span>
+                  <span className="text-slate-500">Holi Special Collection</span>
+                </span>
+              </div>
+
+              {/* Gender Toggle */}
+              <div className="flex justify-center mb-8">
+                <div className="inline-flex bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full p-1 shadow-sm">
+                  <button
+                    onClick={() => setFestiveGender("female")}
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${festiveGender === "female"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-500 hover:text-slate-800"
+                      }`}
+                  >
+                    Women
+                  </button>
+                  <button
+                    onClick={() => setFestiveGender("male")}
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${festiveGender === "male"
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-500 hover:text-slate-800"
+                      }`}
+                  >
+                    Men
+                  </button>
+                </div>
+              </div>
+
+              {/* Festive Cards Grid */}
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {festiveOutfits
+                  .filter((item) => item.gender === festiveGender)
+                  .map((item, i) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                      className="group relative rounded-2xl overflow-hidden border border-slate-200/60 bg-white/80 backdrop-blur-sm hover:border-orange-300 transition-all duration-500 hover:shadow-[0_8px_30px_rgba(249,115,22,0.15)] hover:-translate-y-1"
+                    >
+                      {/* Image container */}
+                      <div className="relative h-56 overflow-hidden">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                        />
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-5 space-y-2">
+                        <h3 className="font-semibold text-sm text-slate-800 group-hover:text-orange-600 transition-colors duration-300 line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <div className="flex flex-wrap gap-1">
+                          {item.mood.map((m) => (
+                            <span key={m} className="text-[10px] px-2 py-0.5 rounded-full bg-orange-50 text-orange-500 border border-orange-100 capitalize">
+                              {m}
+                            </span>
+                          ))}
+                          {item.budget.map((b) => (
+                            <span key={b} className="text-[10px] px-2 py-0.5 rounded-full bg-green-50 text-green-500 border border-green-100 capitalize">
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+
+                        <a
+                          href={item.affiliateLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 mt-3 text-orange-500 text-sm font-medium hover:gap-2.5 transition-all duration-300"
+                        >
+                          Explore Look
+                          <span className="text-xs">→</span>
+                        </a>
+                      </div>
+
+                      {/* Hover glow effect */}
+                      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-br from-orange-500/5 via-transparent to-transparent" />
+                    </motion.div>
+                  ))}
+              </div>
             </>
           )}
 
