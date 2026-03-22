@@ -10,3 +10,11 @@ npm-debug.log*
 *.pem
 .DS_Store
 out/
+
+# Custom logs and results
+*_results.txt
+*_results_json.txt
+*_output.txt
+*_log.txt
+npm_list.txt
+final_lint_errors.txt
