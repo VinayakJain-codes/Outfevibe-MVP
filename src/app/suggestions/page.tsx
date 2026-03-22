@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/authContext";
-import { supabase } from "@/lib/supabase";
+
 
 /* -------------------- TYPES -------------------- */
 
@@ -213,59 +213,26 @@ export default function SuggestionsPage() {
     setPersona(storedPersona);
   }, []);
 
-  // Load previously saved suggestion outfits from Supabase
+  // Load previously saved suggestion outfits from localStorage
   useEffect(() => {
-    if (!user) return;
-    const loadSaved = async () => {
-      const { data, error } = await supabase
-        .from("ai_outfit_images")
-        .select("ai_suggestion")
-        .eq("user_id", user.id);
-      if (!error && data) {
-        const ids = new Set<string>(
-          data
-            .map((row: any) => {
-              const match = row.ai_suggestion?.match(/\[SID:([^\]]+)\]/);
-              return match ? match[1] : null;
-            })
-            .filter(Boolean) as string[]
-        );
-        setSaved(ids);
-      }
-    };
-    loadSaved();
-  }, [user]);
+    const storedSaved = localStorage.getItem("savedOutfits");
+    if (storedSaved) {
+      setSaved(new Set(JSON.parse(storedSaved)));
+    }
+  }, []);
 
-  const toggleSave = async (outfit: Outfit) => {
+  const toggleSave = (outfit: Outfit) => {
     const isSaved = saved.has(outfit.id);
+    const nextSaved = new Set(saved);
 
     if (isSaved) {
-      // Unsave
-      setSaved((prev) => {
-        const next = new Set(prev);
-        next.delete(outfit.id);
-        return next;
-      });
-      if (user) {
-        const { error } = await supabase
-          .from("ai_outfit_images")
-          .delete()
-          .eq("user_id", user.id)
-          .like("ai_suggestion", `%[SID:${outfit.id}]%`);
-        if (error) console.error("Error removing saved outfit:", error);
-      }
+      nextSaved.delete(outfit.id);
     } else {
-      // Save
-      setSaved((prev) => new Set(prev).add(outfit.id));
-      if (user) {
-        const { error } = await supabase.from("ai_outfit_images").insert({
-          user_id: user.id,
-          image_url: outfit.image,
-          ai_suggestion: `${outfit.title} - ${outfit.description} [SID:${outfit.id}]`,
-        });
-        if (error) console.error("Error saving outfit:", error);
-      }
+      nextSaved.add(outfit.id);
     }
+
+    setSaved(nextSaved);
+    localStorage.setItem("savedOutfits", JSON.stringify(Array.from(nextSaved)));
   };
 
   if (!persona) {

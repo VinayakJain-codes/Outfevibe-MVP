@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Sparkles, TrendingUp, Zap, Calendar, Award, Heart, ShoppingBag } from "lucide-react";
 
@@ -20,46 +20,17 @@ export default function ProfilePage() {
         }
     }, [user, loading, router]);
 
-    // Fetch full name from users_profile (works for both email + Google signup)
+    // Fetch profile data from localStorage
     useEffect(() => {
-        if (!user) return;
-        const fetchName = async () => {
-            const { data } = await supabase
-                .from("users_profile")
-                .select("full_name")
-                .eq("id", user.id)
-                .single();
-            if (data?.full_name) setDbName(data.full_name);
-        };
-        fetchName();
-    }, [user]);
+        const storedName = localStorage.getItem("user_display_name");
+        if (storedName) setDbName(storedName);
 
-    // Load persona from Supabase (or fallback to localStorage)
-    useEffect(() => {
-        const loadPersona = async () => {
-            if (user) {
-                const { data, error } = await supabase
-                    .from("quiz_result")
-                    .select("persona_name, gender")
-                    .eq("user_id", user.id)
-                    .order("created_at", { ascending: false })
-                    .limit(1)
-                    .single();
-                if (!error && data) {
-                    setPersona(data.persona_name);
-                    setQuizGender(data.gender);
-                    return;
-                }
-            }
-            // Fallback: check localStorage
-            const localPersona = localStorage.getItem("userPersona");
-            const localGender = localStorage.getItem("quizGender");
-            if (localPersona) {
-                setPersona(localPersona);
-                setQuizGender(localGender === "male" ? "Boy" : localGender === "female" ? "Girl" : localGender);
-            }
-        };
-        loadPersona();
+        const localPersona = localStorage.getItem("userPersona");
+        const localGender = localStorage.getItem("quizGender");
+        if (localPersona) {
+            setPersona(localPersona);
+            setQuizGender(localGender === "male" ? "Boy" : localGender === "female" ? "Girl" : localGender);
+        }
     }, [user]);
 
     if (!user) {

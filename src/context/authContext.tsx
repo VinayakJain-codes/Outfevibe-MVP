@@ -1,8 +1,23 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { supabase } from "@/lib/supabase";
-import type { User, Session } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+
+export interface User {
+    id: string;
+    email: string;
+    created_at?: string;
+    user_metadata: {
+        display_name?: string;
+        full_name?: string;
+        name?: string;
+        avatar_url?: string;
+    };
+}
+
+export interface Session {
+    user: User;
+}
 
 interface AuthContextType {
     user: User | null;
@@ -22,100 +37,65 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
-
-        // Listen for auth changes
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-
-            // Save/update user profile on sign in (catches Google OAuth + email logins)
-            if (event === "SIGNED_IN" && session?.user) {
-                const u = session.user;
-                const fullName =
-                    u.user_metadata?.full_name ||
-                    u.user_metadata?.display_name ||
-                    u.user_metadata?.name ||
-                    u.email?.split("@")[0] ||
-                    "";
-
-                const { error } = await supabase
-                    .from("users_profile")
-                    .upsert(
-                        {
-                            id: u.id,
-                            full_name: fullName,
-                            email: u.email || "",
-                        },
-                        { onConflict: "id" }
-                    );
-                if (error) console.error("Error saving user profile:", error);
-            }
-        });
-
-        return () => subscription.unsubscribe();
+        // Mock get initial session from localStorage
+        const storedUser = localStorage.getItem("auth_user");
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+            setSession({ user: parsedUser });
+        }
+        setLoading(false);
     }, []);
 
     const login = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-        if (error) throw error;
+        // Mock login
+        const mockUser: User = {
+            id: "mock-id-" + Date.now(),
+            email: email,
+            created_at: new Date().toISOString(),
+            user_metadata: {
+                display_name: email.split("@")[0],
+            },
+        };
+        localStorage.setItem("auth_user", JSON.stringify(mockUser));
+        setUser(mockUser);
+        setSession({ user: mockUser });
     };
 
     const signup = async (email: string, password: string, displayName: string) => {
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: {
-                    display_name: displayName,
-                },
+        // Mock signup
+        const mockUser: User = {
+            id: "mock-id-" + Date.now(),
+            email: email,
+            created_at: new Date().toISOString(),
+            user_metadata: {
+                display_name: displayName,
             },
-        });
-        if (error) throw error;
-
-        // Store user data in users_profile table (non-fatal if it fails)
-        if (data.user) {
-            try {
-                const { error: dbError } = await supabase
-                    .from("users_profile")
-                    .upsert(
-                        {
-                            id: data.user.id,
-                            full_name: displayName,
-                            email: data.user.email || "",
-                        },
-                        { onConflict: "id" }
-                    );
-                if (dbError) console.error("Error saving user profile:", dbError);
-            } catch (profileErr) {
-                console.error("Profile creation failed (non-fatal):", profileErr);
-            }
-        }
+        };
+        localStorage.setItem("auth_user", JSON.stringify(mockUser));
+        setUser(mockUser);
+        setSession({ user: mockUser });
     };
 
     const loginWithGoogle = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${window.location.origin}/`,
+        // Mock Google login
+        const mockUser: User = {
+            id: "mock-google-id-" + Date.now(),
+            email: "google.user@example.com",
+            created_at: new Date().toISOString(),
+            user_metadata: {
+                display_name: "Google User",
             },
-        });
-        if (error) throw error;
+        };
+        localStorage.setItem("auth_user", JSON.stringify(mockUser));
+        setUser(mockUser);
+        setSession({ user: mockUser });
     };
 
     const logout = async () => {
-        await supabase.auth.signOut();
+        localStorage.removeItem("auth_user");
+        setUser(null);
+        setSession(null);
         // Force a hard redirect to clear all state properly
         window.location.href = "/";
     };

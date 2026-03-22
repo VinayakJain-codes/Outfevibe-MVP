@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/authContext";
-import { supabase } from "@/lib/supabase";
+
 import Link from "next/link";
 
 /* ---------------- TYPES ---------------- */
@@ -50,30 +50,12 @@ export default function OutfitChat() {
   }, []);
 
   /* ---------------- LOAD SAVED ---------------- */
-
   useEffect(() => {
-    if (!user) return;
-
-    const loadSaved = async () => {
-      const { data } = await supabase
-        .from("ai_outfit_images")
-        .select("ai_suggestion")
-        .eq("user_id", user.id);
-
-      if (data) {
-        const savedIds = data
-          .map((row: any) => {
-            const match = row.ai_suggestion?.match(/\[ID:(\d+)\]/);
-            return match ? parseInt(match[1]) : null;
-          })
-          .filter((id: number | null): id is number => id !== null);
-
-        setSaved(savedIds);
-      }
-    };
-
-    loadSaved();
-  }, [user]);
+    const storedSaved = localStorage.getItem("savedOutfitIds");
+    if (storedSaved) {
+      setSaved(JSON.parse(storedSaved));
+    }
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });

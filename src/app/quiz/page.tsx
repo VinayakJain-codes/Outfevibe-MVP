@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/authContext";
-import { supabase } from "@/lib/supabase";
+
 import Image from "next/image";
 
 /* ================= TYPES ================= */
@@ -596,57 +596,14 @@ export default function StyleQuizPage() {
                       localStorage.setItem("userPersona", persona);
                       localStorage.setItem("quizGender", gender || "");
 
-                      // Fire Supabase save in the background — don't block navigation
-                      if (user && user.email) {
-                        const saveResult = async () => {
-                          try {
-                            // Check if a record already exists with this email
-                            const { data, error: fetchError } = await supabase
-                              .from("quiz_result")
-                              .select("id")
-                              .eq("email", user.email)
-                              .single();
-
-                            if (fetchError && fetchError.code !== "PGRST116") {
-                              // PGRST116 means zero rows found, which is fine
-                              console.error("Error checking existing record:", fetchError.message);
-                            }
-
-                            if (data) {
-                              // Record exists, update it
-                              const { error: updateError } = await supabase
-                                .from("quiz_result")
-                                .update({
-                                  persona_name: persona,
-                                  gender: gender === "male" ? "Boy" : "Girl"
-                                })
-                                .eq("email", user.email);
-
-                              if (updateError) {
-                                console.error("Update failed:", updateError.message);
-                              }
-                            } else {
-                              // Record does not exist, insert new
-                              const { error: insertError } = await supabase
-                                .from("quiz_result")
-                                .insert({
-                                  user_id: user.id || null, // fallback in case user.id is somehow missing
-                                  persona_name: persona,
-                                  email: user.email,
-                                  gender: gender === "male" ? "Boy" : "Girl",
-                                });
-
-                              if (insertError) {
-                                console.error("Insert failed:", insertError.message);
-                              }
-                            }
-                          } catch (err) {
-                            console.error("Failed to save quiz result:", err);
-                          }
-                        };
-
-                        saveResult();
-                      }
+                      // Save mock quiz result to localStorage
+                      const result = {
+                        persona_name: persona,
+                        gender: gender === "male" ? "Boy" : "Girl",
+                        email: user?.email || "guest@example.com",
+                        timestamp: new Date().toISOString()
+                      };
+                      localStorage.setItem("mock_quiz_result", JSON.stringify(result));
 
                       router.push("/outfit");
                     }}

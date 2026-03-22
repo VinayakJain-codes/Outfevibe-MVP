@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+
 import Link from "next/link";
 import { useAuth } from "@/context/authContext";
 import UserDropdown from "@/components/UserDropdown";
@@ -38,34 +38,13 @@ export default function Home() {
 
   const router = useRouter();
 
-  // Load user persona from Supabase (or localStorage fallback)
+  // Load user persona from localStorage
   useEffect(() => {
-    const loadPersona = async () => {
-      if (user && user.email) {
-        const { data, error } = await supabase
-          .from("quiz_result")
-          .select("persona_name")
-          .eq("email", user.email)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
-
-        if (!error && data && data.persona_name) {
-          setUserPersona(data.persona_name);
-          localStorage.setItem("userPersona", data.persona_name);
-          setTrendingTab("persona");
-        } else {
-          setUserPersona(null);
-        }
-      } else {
-        const storedPersona = localStorage.getItem("userPersona");
-        if (storedPersona) {
-          setUserPersona(storedPersona);
-          setTrendingTab("persona");
-        }
-      }
-    };
-    loadPersona();
+    const storedPersona = localStorage.getItem("userPersona");
+    if (storedPersona) {
+      setUserPersona(storedPersona);
+      setTrendingTab("persona");
+    }
   }, [user]);
 
   // Load festive outfits from API
@@ -85,7 +64,7 @@ export default function Home() {
     loadFestive();
   }, []);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !message) {
       alert("Please fill in both fields.");
@@ -93,21 +72,20 @@ export default function Home() {
     }
     try {
       setLoading(true);
-      const insertData: any = {
-        message: `Name: ${name}\n\nMessage: ${message}`,
-        created_at: new Date().toISOString(),
+      const feedbackData = {
+        name,
+        message,
+        email: user?.email || "anonymous",
+        timestamp: new Date().toISOString(),
       };
-      if (user) {
-        insertData.user_id = user.id;
-      }
+      
+      // Save to localStorage as a mock for now
+      const existingFeedback = JSON.parse(localStorage.getItem("user_feedback") || "[]");
+      existingFeedback.push(feedbackData);
+      localStorage.setItem("user_feedback", JSON.stringify(existingFeedback));
 
-      const { error } = await supabase
-        .from("feedback")
-        .insert(insertData);
-
-      if (error) throw error;
-
-      alert("Feedback submitted successfully!");
+      console.log("Feedback data (Mock Saved):", feedbackData);
+      alert("Feedback submitted successfully (saved locally)!");
       setName("");
       setMessage("");
     } catch (error) {
